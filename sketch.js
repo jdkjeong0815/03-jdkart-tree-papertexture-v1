@@ -1,7 +1,18 @@
-// jdk  : 2025-Jan-19
+// =============================================================================
+// 프로그램  : 03-jdkart-tree-papertexture-v1
+// Created  : 2024-Dec-19
+// 작가      : JDK    영감 : SteveMakes
+// GitHub   : https://github.com/jdkjeong0815/03-jdkart-tree-papertexture-v1
+// Web      : https://jdkjeong0815.github.io/03-jdkart-tree-papertexture-v1/
+// 작품 설명 : 나무 이미지를 배경에 랜덤하게 배치하고, 물감 효과(페이퍼 텍스쳐)를 준다.
+// 라이브러리 기능: 풀스크린, 저장 기능, 노스크롤, 윈도우 리사이즈, 반응형 UI
+// 
+// Last Update
+// 2025-Jan-19: 
+//    1) 나무 종류 : Black: 7, white: 6, total: 13
+// =============================================================================
 
-
-
+let saveFileName = "03-jdkart-tree-papertexture-v1";
 let h1, h, s1, s, b1, b, i, j,h2;
 let p = 1;
 let mv = 15;
@@ -10,34 +21,31 @@ let alph = 5;
 let maxVary;
 let colorData;
 let treePlace;
-let treeNum = 39;
-// let img= [];
+let treeNum = 6;
 let treeImages = []; // Array to store tree images
-//let numTrees = 39; // Number of tree images to preload
+
 
 function preload() {
   colorData = loadJSON('colors.json');
 
   // 나무 이미지
   // tree assets: https://www.onlygfx.com/17-dead-tree-silhouette-png-transparent/
-  // default: 39
 
-   // Load tree images with callback to skip non-existent files
-  for (let i = 0; i < treeNum; i++) {
+  // Load tree images with callback to skip non-existent files
+  for (let i = 0; i < treeNum; i++) {  // black tree
     let imgPath = `assets/tree/dead-tree-silhouette-${i}.png`;
     loadImage(imgPath, 
       img => treeImages.push(img), // Success callback
       err => console.log(`Image not found: ${imgPath}`) // Error callback
     );
   }
-   for (let i = 0; i < treeNum; i++) {
+   for (let i = 0; i < treeNum; i++) {  // white tree
     let imgPath = `assets/tree/dead-tree-silhouette-w-${i}.png`;
     loadImage(imgPath, 
       img => treeImages.push(img), // Success callback
       err => console.log(`Image not found: ${imgPath}`) // Error callback
     );
   }
- 
 }
 
 function touchStarted() {
@@ -45,18 +53,18 @@ function touchStarted() {
   let fs = fullscreen();
   fullscreen(!fs);
   
-  setTimeout(newArt, 2000);  // 애니메이션 효과를 위해 120초로 변경
+  setTimeout(newArt, 2000);  //전체화면 리로드 전환 위해 2초로 설정
   // return false; // 기본 터치 동작 방지
 }
 
 function setup() {
-  console.log("treeImages: ", treeImages.length);
+  //console.log("treeImages: ", treeImages.length);
   noScroll(); // 스크롤 금지. 스크롤바 생기는 것 방지
   //createCanvas(1040, 1040);
   createCanvas(windowWidth, windowHeight);
 
   newArt();
-  setInterval(newArt, 60000); // generate new art every 3 seconds
+  setInterval(newArt, 60000); // generate new art every 60 seconds
 }
 
 function newArt() {
@@ -228,20 +236,4 @@ function addPaperTexture(){
   //   strokeWeight(random(0.5, 2));
   //   line(startX, startY, endX, endY);
   // }
-}
-
-function keyPressed() {
-  if (key === 's' || key === 'S') {
-    let timestamp = nf(year(), 2) + nf(month(), 2) + nf(day(), 2) + "-" + nf(hour(), 2) + nf(minute(), 2) + nf(second(), 2);
-    saveCanvas("03-paper-texture-v1-" + timestamp, "jpg");
-  }
-}
-
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  redraw();
-}
-
-function noScroll() {
-  document.body.style.overflow = 'hidden';
 }
