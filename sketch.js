@@ -1,3 +1,7 @@
+// jdk  : 2025-Jan-19
+
+
+
 let h1, h, s1, s, b1, b, i, j,h2;
 let p = 1;
 let mv = 15;
@@ -6,9 +10,10 @@ let alph = 5;
 let maxVary;
 let colorData;
 let treePlace;
-let treeNum;
-let img= [];
-
+let treeNum = 39;
+// let img= [];
+let treeImages = []; // Array to store tree images
+//let numTrees = 39; // Number of tree images to preload
 
 function preload() {
   colorData = loadJSON('colors.json');
@@ -16,13 +21,37 @@ function preload() {
   // 나무 이미지
   // tree assets: https://www.onlygfx.com/17-dead-tree-silhouette-png-transparent/
   // default: 39
-  for (i = 0; i < 39; i++) {
-    img[i] = loadImage(`assets/dead-tree-silhouette-${i}.png`);  //  나무 - 블개. 현재 39개
-    //img[i] = loadImage(`assets/dead-tree-silhouette-w-${i}.png`);  // 나무 - 흰색. 현재 4개
+
+   // Load tree images with callback to skip non-existent files
+  for (let i = 0; i < treeNum; i++) {
+    let imgPath = `assets/tree/dead-tree-silhouette-${i}.png`;
+    loadImage(imgPath, 
+      img => treeImages.push(img), // Success callback
+      err => console.log(`Image not found: ${imgPath}`) // Error callback
+    );
   }
+   for (let i = 0; i < treeNum; i++) {
+    let imgPath = `assets/tree/dead-tree-silhouette-w-${i}.png`;
+    loadImage(imgPath, 
+      img => treeImages.push(img), // Success callback
+      err => console.log(`Image not found: ${imgPath}`) // Error callback
+    );
+  }
+ 
+}
+
+function touchStarted() {
+  // 첫 번째 터치: 풀스크린 활성화
+  let fs = fullscreen();
+  fullscreen(!fs);
+  
+  setTimeout(newArt, 2000);  // 애니메이션 효과를 위해 120초로 변경
+  // return false; // 기본 터치 동작 방지
 }
 
 function setup() {
+  console.log("treeImages: ", treeImages.length);
+  noScroll(); // 스크롤 금지. 스크롤바 생기는 것 방지
   //createCanvas(1040, 1040);
   createCanvas(windowWidth, windowHeight);
 
@@ -42,40 +71,29 @@ function newArt() {
   addPaperTexture();
 
   // 나무 이미지
-  //let selectedTree = Math.floor(random(38));  // default: 38
-  let selectedTree = random(img);
-  console.log("treenum: ", selectedTree);
-  //treePlace = random(2);
-  //img[treeNum].resize(0, (height / 1.5)); // * 2
+  let selectedTree = random(treeImages);
+  drawTree(selectedTree);
+}
 
+function drawTree(selectedTree) {
   // 나무 이미지 크기 조정
-  let treeScale = random(0.4, 0.5);  // 0.666: h*(2/3) 화면 대비 나무는 2/3 높이 기준
+  let treeScale = random(0.66, 0.7);  // 0.666: h*(2/3) 화면 대비 나무는 2/3 높이 기준
   let ratioTree = selectedTree.width / selectedTree.height;
-  console.log("imgWidth: ", selectedTree.width, "imgHeight: ", selectedTree.height, "ratioTree: ", ratioTree);
+  //console.log("imgWidth: ", selectedTree.width, "imgHeight: ", selectedTree.height, "ratioTree: ", ratioTree);
   let imgHeight = height * treeScale;
   let imgWidth = imgHeight * ratioTree;
 
-  console.log("imgWidth: ", imgWidth, "imgHeight: ", imgHeight, "ratioTree: ", ratioTree);
+  //console.log("imgWidth: ", imgWidth, "imgHeight: ", imgHeight, "ratioTree: ", ratioTree);
 
   let posX = random(0, width - imgWidth)  // 임의의 위치
   let posY = height - imgHeight + 35; // 나무의 높이를 아래로 35px 내림. 밑면이 바닥에 닿도록.
   image(selectedTree, posX, posY, imgWidth, imgHeight);
-  //drawTree(selectedTree);
-}
-
-function drawTree(selectedTree) {
-  //image(selectedTree, posX, posY, imgWidth, imgHeight);
-  // if (treePlace < 1) {
-  //   image(img[treeNum], width/2, height/3 + height*0.02);
-  // } else {
-  //   image(img[treeNum], 0, height/3 + height*0.02);
-  // }
 }
 
 function selectRandomPalette() {
   let palettes = Object.values(colorData);
   let selectedPalette = random(palettes);
-  console.log('Selected Palette:', selectedPalette);
+  //console.log('Selected Palette:', selectedPalette);
   let randomColor = random(selectedPalette);
   let rgb = hexToRgb(randomColor);
   h1 = h = rgbToHsb(rgb.r, rgb.g, rgb.b).h;
@@ -213,8 +231,17 @@ function addPaperTexture(){
 }
 
 function keyPressed() {
-    if (key === 's' || key === 'S') {
-      let timestamp = nf(year(), 2) + nf(month(), 2) + nf(day(), 2) + "-" + nf(hour(), 2) + nf(minute(), 2) + nf(second(), 2);
-      saveCanvas("output/03-paper-texture-v1-" + timestamp, "jpg");
-    }
+  if (key === 's' || key === 'S') {
+    let timestamp = nf(year(), 2) + nf(month(), 2) + nf(day(), 2) + "-" + nf(hour(), 2) + nf(minute(), 2) + nf(second(), 2);
+    saveCanvas("03-paper-texture-v1-" + timestamp, "jpg");
+  }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  redraw();
+}
+
+function noScroll() {
+  document.body.style.overflow = 'hidden';
 }
